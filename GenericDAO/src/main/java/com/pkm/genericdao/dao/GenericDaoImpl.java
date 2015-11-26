@@ -8,14 +8,10 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public abstract class GenericDaoImpl<T, PK extends Serializable> implements GenericDao<T, PK> {
-
-	@Autowired
-	protected SessionFactory sessionFactory;
 
 	protected Logger logger;
 
@@ -30,12 +26,20 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 		}
 	}
 
+	/**
+	 * Method to return the specific SessionFactory that a child class will annotate
+	 * with the @Qualifier tag 
+	 *  
+	 * @return SessionFactory
+	 */
+	protected abstract SessionFactory getQualifiedSessionFactory();
+
 	@Override
 	public T save(T t) {
 
 		// SaveOrUpdate the Hero in the SessionFactory
 		logger.info("Saving (or Updating) " + t + " into the repository");
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getQualifiedSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		session.saveOrUpdate(t);
 		session.getTransaction().commit();
@@ -44,7 +48,7 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 
 	@Override
 	public Long countAll() {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getQualifiedSessionFactory().getCurrentSession();
 		Class<T> type = this.getEntityClass();
 		Criteria crit = session.createCriteria(type);
 		crit.setProjection(Projections.rowCount());
@@ -55,7 +59,7 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> getAll() {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getQualifiedSessionFactory().getCurrentSession();
 		Class<T> type = this.getEntityClass();
 		Criteria criteria = session.createCriteria(type);
 		return ((List<T>) criteria.list());
@@ -64,7 +68,7 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 	@SuppressWarnings("unchecked")
 	@Override
 	public T get(PK id) {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getQualifiedSessionFactory().getCurrentSession();
 		Class<T> type = this.getEntityClass();
 		T t = (T) session.get(type, id);
 		return (t);
@@ -73,7 +77,7 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 	@SuppressWarnings("unchecked")
 	@Override
 	public T delete(PK id) {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = getQualifiedSessionFactory().getCurrentSession();
 		Class<T> type = this.getEntityClass();
 		T t = (T) session.get(type, id);
 
