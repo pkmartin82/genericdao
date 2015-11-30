@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation=
+			"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+	<bean id="genericDaoTestDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:/datasources/TestDS" />
+		<property name="lookupOnStartup" value="true" />
+		<property name="cache" value="true" />
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+	</bean>
+
+	<bean id="genericDaoTestJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="genericDaoTestDataSource" />
+	</bean>
+	
+	<bean id="genericDaoTestSessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<qualifier value="genericDaoTestSessionFactory" />
+		<property name="dataSource">
+			<ref bean="genericDaoTestDataSource" />
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.pkm.genericdao.*</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- Set the following field to 'create' so that test tables will be created automatically -->
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="genericDaoTestTransactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<qualifier value="heroTransactionManager" />
+		<property name="sessionFactory">
+			<ref bean="genericDaoTestSessionFactory" />
+		</property>
+	</bean>
+
+	<context:component-scan base-package="com.pkm.genericdao" />
+	<tx:annotation-driven />
+</beans>  

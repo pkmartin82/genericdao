@@ -62,7 +62,8 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 		Session session = getQualifiedSessionFactory().getCurrentSession();
 		Class<T> type = this.getEntityClass();
 		Criteria criteria = session.createCriteria(type);
-		return ((List<T>) criteria.list());
+		List<T> entities = (List<T>) criteria.list();
+		return (entities);
 	}
 
 	@SuppressWarnings("unchecked")
