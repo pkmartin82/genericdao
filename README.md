@@ -1,2 +1,0 @@
-# genericdao
-Generic DAO layer
