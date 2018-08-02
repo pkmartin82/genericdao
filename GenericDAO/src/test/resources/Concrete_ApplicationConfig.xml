@@ -21,7 +21,7 @@
 	</bean>
 	
 	<bean id="genericDaoTestSessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<qualifier value="genericDaoTestSessionFactory" />
 		<property name="dataSource">
 			<ref bean="genericDaoTestDataSource" />
@@ -42,7 +42,7 @@
 	</bean>
 	
 	<bean id="genericDaoTestTransactionManager"
-		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<qualifier value="heroTransactionManager" />
 		<property name="sessionFactory">
 			<ref bean="genericDaoTestSessionFactory" />
